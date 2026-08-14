@@ -1,0 +1,63 @@
+{
+	"actions": [],
+	"creation": "2026-08-14 00:00:00.000000",
+	"doctype": "DocType",
+	"editable_grid": 0,
+	"engine": "InnoDB",
+	"field_order": [
+		"step",
+		"action",
+		"actor",
+		"timestamp",
+		"reason"
+	],
+	"fields": [
+		{
+			"fieldname": "step",
+			"fieldtype": "Data",
+			"in_list_view": 1,
+			"label": "Step",
+			"read_only": 1
+		},
+		{
+			"fieldname": "action",
+			"fieldtype": "Data",
+			"in_list_view": 1,
+			"label": "Action",
+			"read_only": 1
+		},
+		{
+			"fieldname": "actor",
+			"fieldtype": "Link",
+			"in_list_view": 1,
+			"label": "Actor",
+			"options": "User",
+			"read_only": 1
+		},
+		{
+			"fieldname": "timestamp",
+			"fieldtype": "Datetime",
+			"in_list_view": 1,
+			"label": "Timestamp",
+			"read_only": 1
+		},
+		{
+			"fieldname": "reason",
+			"fieldtype": "Small Text",
+			"label": "Reason",
+			"read_only": 1
+		}
+	],
+	"index_web_pages_for_search": 1,
+	"istable": 1,
+	"links": [],
+	"modified": "2026-08-14 00:00:00.000000",
+	"modified_by": "Administrator",
+	"module": "Equipment Maintenance",
+	"name": "Requisition Transition Log",
+	"owner": "Administrator",
+	"permissions": [],
+	"sort_field": "creation",
+	"sort_order": "ASC",
+	"states": []
+}

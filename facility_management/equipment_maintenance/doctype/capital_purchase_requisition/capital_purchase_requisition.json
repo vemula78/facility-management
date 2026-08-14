@@ -1,0 +1,140 @@
+{
+	"actions": [],
+	"allow_rename": 0,
+	"autoname": "format:CPR-{#####}",
+	"creation": "2026-08-14 00:00:00.000000",
+	"doctype": "DocType",
+	"editable_grid": 1,
+	"engine": "InnoDB",
+	"field_order": [
+		"raised_by",
+		"department",
+		"title",
+		"justification",
+		"estimated_value",
+		"is_capital_requisition",
+		"linked_asset",
+		"linked_ticket",
+		"status",
+		"current_step",
+		"history"
+	],
+	"fields": [
+		{
+			"description": "Distinct from Frappe's own `owner` — an Administrator can raise a requisition on behalf of a department, in which case owner is the Administrator but raised_by is deliberately still set to whoever is actually raising it for that department.",
+			"fieldname": "raised_by",
+			"fieldtype": "Link",
+			"in_list_view": 1,
+			"in_standard_filter": 1,
+			"label": "Raised By",
+			"options": "User",
+			"reqd": 1
+		},
+		{
+			"fieldname": "department",
+			"fieldtype": "Link",
+			"in_list_view": 1,
+			"in_standard_filter": 1,
+			"label": "Department",
+			"options": "Department",
+			"reqd": 1
+		},
+		{
+			"fieldname": "title",
+			"fieldtype": "Data",
+			"in_list_view": 1,
+			"label": "Title",
+			"reqd": 1
+		},
+		{
+			"fieldname": "justification",
+			"fieldtype": "Small Text",
+			"label": "Justification"
+		},
+		{
+			"fieldname": "estimated_value",
+			"fieldtype": "Currency",
+			"in_list_view": 1,
+			"label": "Estimated Value",
+			"reqd": 1
+		},
+		{
+			"description": "Derived server-side from Equipment Maintenance Settings' capital_purchase_threshold at creation time — informational/reporting only, every requisition goes through the same fixed chain regardless of value.",
+			"fieldname": "is_capital_requisition",
+			"fieldtype": "Check",
+			"label": "Is Capital Requisition",
+			"read_only": 1
+		},
+		{
+			"description": "The asset this purchase would replace, if any.",
+			"fieldname": "linked_asset",
+			"fieldtype": "Link",
+			"label": "Linked Asset",
+			"options": "Asset"
+		},
+		{
+			"description": "The breakdown/repair ticket that prompted this purchase, if any.",
+			"fieldname": "linked_ticket",
+			"fieldtype": "Link",
+			"label": "Linked Ticket",
+			"options": "Breakdown Repair Ticket"
+		},
+		{
+			"default": "Draft",
+			"description": "Managed exclusively by the transition() controller method — never editable via a plain save, see validate()'s content-lock.",
+			"fieldname": "status",
+			"fieldtype": "Select",
+			"in_list_view": 1,
+			"in_standard_filter": 1,
+			"label": "Status",
+			"options": "Draft\nActive\nReturned\nRejected\nWithdrawn\nCompleted",
+			"read_only": 1,
+			"reqd": 1
+		},
+		{
+			"default": "draft",
+			"description": "The workflow step key this requisition is currently sitting at (waiting for that step's actor), or the step it stalled/finalized at for a non-Active status. See capital_purchase_requisition.py's REQUISITION_WORKFLOW for the fixed chain.",
+			"fieldname": "current_step",
+			"fieldtype": "Data",
+			"in_list_view": 1,
+			"in_standard_filter": 1,
+			"label": "Current Step",
+			"read_only": 1,
+			"reqd": 1
+		},
+		{
+			"description": "Full transition history — every submit/advance/reject/return/resubmit/withdraw action, who did it, when, and the reason if one was required. Doubles as the milestone-timestamp record (each row's timestamp is that step's milestone) rather than a separate Datetime field per step.",
+			"fieldname": "history",
+			"fieldtype": "Table",
+			"label": "Transition History",
+			"options": "Requisition Transition Log",
+			"read_only": 1
+		}
+	],
+	"index_web_pages_for_search": 1,
+	"links": [],
+	"modified": "2026-08-14 00:00:00.000000",
+	"modified_by": "Administrator",
+	"module": "Equipment Maintenance",
+	"name": "Capital Purchase Requisition",
+	"naming_rule": "Expression",
+	"owner": "Administrator",
+	"permissions": [
+		{
+			"create": 1,
+			"delete": 0,
+			"email": 1,
+			"export": 1,
+			"print": 1,
+			"read": 1,
+			"report": 1,
+			"role": "System Manager",
+			"share": 1,
+			"write": 1
+		}
+	],
+	"sort_field": "creation",
+	"sort_order": "DESC",
+	"states": [],
+	"track_changes": 1
+}

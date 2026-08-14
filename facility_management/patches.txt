@@ -13,3 +13,5 @@ facility_management.patches.v0_3.grant_em_contract_permissions
 facility_management.patches.v0_3.grant_em_pm_permissions
 facility_management.patches.v0_3.create_em_vendor_role
 facility_management.patches.v0_3.grant_em_ticket_permissions
+facility_management.patches.v0_3.create_em_requisition_roles
+facility_management.patches.v0_3.grant_em_requisition_permissions

@@ -17,16 +17,33 @@ Registering only the first would leave every asset readable by name to any
 engineering role, which is what this module exists to prevent.
 
 This file is the reference pattern the PM Schedule / PM Record / Ticket /
-Contract / Requisition doctypes are expected to copy. PM Schedule and PM
-Record now do (below).
+Contract / Requisition doctypes are expected to copy. PM Schedule, PM
+Record, Ticket and Requisition now do (below).
 """
 
 import frappe
 
 from facility_management.equipment_maintenance.utils import (
 	asset_classes_for_user,
+	get_user_department,
 	is_trade_scoped_user,
 	supplier_for_user,
+)
+
+#: The eight committee/procedural Roles with hospital-wide purview over every
+#: Capital Purchase Requisition, regardless of which department raised it —
+#: these are governance bodies, not department-scoped staff. Deliberately
+#: excludes "Department User", which IS department-scoped (see
+#: requisition_query_conditions).
+REQUISITION_COMMITTEE_ROLES = (
+	"Director",
+	"IPC Member",
+	"CPC Member",
+	"HEC Member",
+	"BoT Member",
+	"Purchase",
+	"Stores",
+	"Finance",
 )
 
 
@@ -294,3 +311,71 @@ def pm_record_has_permission(doc, ptype=None, user=None):
 	reference_name = doc.get("reference_name") if hasattr(doc, "get") else None
 	asset_class = _asset_class_for_reference(reference_doctype, reference_name)
 	return bool(asset_class) and asset_class in classes
+
+
+def _requisition_scope(user):
+	"""(unrestricted, department) for Requisition scoping.
+
+	`unrestricted` True means no condition applies at all — Administrator or
+	any of the eight committee/procedural Roles, which have hospital-wide
+	purview by design (see REQUISITION_COMMITTEE_ROLES). Otherwise
+	`department` is this user's own hem_department (possibly None), and the
+	caller must ALSO allow rows where raised_by = this user regardless of
+	department — a user who raised a requisition can always see their own,
+	even with no department mapped at all, or from a department other than
+	the one they're currently mapped to.
+	"""
+	if _is_admin_for_requisitions(user):
+		return True, None
+	roles = set(frappe.get_roles(user))
+	if roles.intersection(REQUISITION_COMMITTEE_ROLES):
+		return True, None
+	return False, get_user_department(user)
+
+
+def _is_admin_for_requisitions(user):
+	return user == "Administrator" or "System Manager" in frappe.get_roles(user)
+
+
+def requisition_query_conditions(user=None):
+	"""SQL fragment ANDed onto every Capital Purchase Requisition list query.
+
+	Unlike every other doctype in this file, scoping here is department- and
+	role-based, not trade-based: a Requisition has no Asset Class of its own
+	and its raising department can be entirely unrelated to any engineering
+	trade. Committee/procedural roles (Director, IPC/CPC/HEC/BoT Member,
+	Purchase, Stores, Finance) see everything — they are hospital-wide
+	governance bodies, not department-scoped staff. Everyone else sees their
+	own department's requisitions AND anything they personally raised, even
+	if raised before/after a department reassignment or with no department
+	mapped at all.
+	"""
+	user = user or frappe.session.user
+	unrestricted, department = _requisition_scope(user)
+	if unrestricted:
+		return ""
+	escaped_user = frappe.db.escape(user)
+	if not department:
+		return "(`tabCapital Purchase Requisition`.`raised_by` = {0})".format(escaped_user)
+	escaped_dept = frappe.db.escape(department)
+	return (
+		"((`tabCapital Purchase Requisition`.`department` = {0}) or "
+		"(`tabCapital Purchase Requisition`.`raised_by` = {1}))"
+	).format(escaped_dept, escaped_user)
+
+
+def requisition_has_permission(doc, ptype=None, user=None):
+	"""Gate a direct single-Requisition load/write for a department-scoped user."""
+	user = user or frappe.session.user
+	# Doctype-level string call, same guard as every other has_permission hook
+	# in this file — must pass before touching doc.get(...).
+	if isinstance(doc, str):
+		return True
+	unrestricted, department = _requisition_scope(user)
+	if unrestricted:
+		return True
+	raised_by = doc.get("raised_by") if hasattr(doc, "get") else None
+	if raised_by == user:
+		return True
+	doc_department = doc.get("department") if hasattr(doc, "get") else None
+	return bool(department) and bool(doc_department) and department == doc_department

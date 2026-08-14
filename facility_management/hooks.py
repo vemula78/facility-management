@@ -26,6 +26,7 @@ permission_query_conditions = {
 	"PM Schedule": "facility_management.equipment_maintenance.permissions.pm_schedule_query_conditions",
 	"PM Record": "facility_management.equipment_maintenance.permissions.pm_record_query_conditions",
 	"Breakdown Repair Ticket": "facility_management.equipment_maintenance.permissions.ticket_query_conditions",
+	"Capital Purchase Requisition": "facility_management.equipment_maintenance.permissions.requisition_query_conditions",
 }
 
 has_permission = {
@@ -34,6 +35,7 @@ has_permission = {
 	"PM Schedule": "facility_management.equipment_maintenance.permissions.pm_schedule_has_permission",
 	"PM Record": "facility_management.equipment_maintenance.permissions.pm_record_has_permission",
 	"Breakdown Repair Ticket": "facility_management.equipment_maintenance.permissions.ticket_has_permission",
+	"Capital Purchase Requisition": "facility_management.equipment_maintenance.permissions.requisition_has_permission",
 }
 
 # Fixtures

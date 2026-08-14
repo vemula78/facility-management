@@ -4,3 +4,6 @@
 [post_model_sync]
 # Patches added in this section will be executed after doctypes are migrated
 facility_management.patches.v0_2.seed_bmw_settings_placeholders
+facility_management.patches.v0_3.create_em_roles
+facility_management.patches.v0_3.add_em_custom_fields
+facility_management.patches.v0_3.seed_em_trades_and_asset_classes

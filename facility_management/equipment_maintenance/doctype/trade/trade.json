@@ -1,0 +1,78 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "autoname": "field:trade_name",
+ "creation": "2026-08-14 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "trade_name",
+  "trade_label",
+  "scoped_role",
+  "is_active"
+ ],
+ "fields": [
+  {
+   "description": "Machine key for this trade, e.g. mechanical_utility. Used as the document name and as the value stored on every scoped record.",
+   "fieldname": "trade_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Trade Key",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "trade_label",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Label",
+   "reqd": 1
+  },
+  {
+   "description": "The engineering Role that scopes a user to this trade. Only four of the nine trades have one; the rest stay reachable by unscoped staff roles until the hospital asks for a dedicated role.",
+   "fieldname": "scoped_role",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Scoped Role",
+   "options": "Role"
+  },
+  {
+   "default": "1",
+   "fieldname": "is_active",
+   "fieldtype": "Check",
+   "label": "Is Active"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-08-14 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Equipment Maintenance",
+ "name": "Trade",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 0,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "role": "All"
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "ASC",
+ "states": [],
+ "track_changes": 1
+}

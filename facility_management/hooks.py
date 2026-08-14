@@ -14,6 +14,20 @@ website_route_rules = [
 	{"from_route": "/biomedical-waste-management", "to_route": "biomedical_waste_management"},
 ]
 
+# Permissions — fail-closed trade scoping (Equipment Maintenance)
+# ---------------------------------------------------------------
+# Frappe User Permissions fail OPEN (no rows = unrestricted), so scoping lives in
+# code. BOTH hooks are required: query conditions filter list views, has_permission
+# gates a direct /api/resource/Asset/<name> fetch that list filters never see.
+# This Asset pair is the reference pattern for PM/Ticket/Contract/Requisition.
+permission_query_conditions = {
+	"Asset": "facility_management.equipment_maintenance.permissions.asset_query_conditions",
+}
+
+has_permission = {
+	"Asset": "facility_management.equipment_maintenance.permissions.asset_has_permission",
+}
+
 # Document Events
 # ---------------
 doc_events = {
@@ -35,5 +49,11 @@ doc_events = {
 	"BMW Department": {
 		# Deleting a department would orphan the `department` link on historical bags.
 		"on_trash": "facility_management.biomedical_waste.doctype.bmw_department.bmw_department.prevent_delete",
+	},
+	"Trade": {
+		"on_trash": "facility_management.equipment_maintenance.doctype.trade.trade.prevent_delete",
+	},
+	"Asset Class": {
+		"on_trash": "facility_management.equipment_maintenance.doctype.asset_class.asset_class.prevent_delete",
 	},
 }

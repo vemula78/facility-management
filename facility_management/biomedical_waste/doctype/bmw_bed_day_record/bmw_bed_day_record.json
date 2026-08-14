@@ -13,19 +13,23 @@
  ],
  "fields": [
   {
+   "description": "The reporting period is fixed once this record is saved and cannot be changed. Only Occupied Bed Days can be corrected afterwards. If the period was entered wrong, deletion is blocked by design \u2014 an Administrator override is required to void the record.",
    "fieldname": "year",
    "fieldtype": "Int",
    "in_list_view": 1,
    "label": "Year",
-   "reqd": 1
+   "reqd": 1,
+   "set_only_once": 1
   },
   {
+   "description": "The reporting period is fixed once this record is saved and cannot be changed. Only Occupied Bed Days can be corrected afterwards. If the period was entered wrong, deletion is blocked by design \u2014 an Administrator override is required to void the record.",
    "fieldname": "month",
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Month",
    "options": "1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12",
-   "reqd": 1
+   "reqd": 1,
+   "set_only_once": 1
   },
   {
    "fieldname": "occupied_bed_days",

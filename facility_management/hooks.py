@@ -27,4 +27,13 @@ doc_events = {
 	"BMW Accident": {
 		"on_trash": "facility_management.biomedical_waste.doctype.bmw_accident.bmw_accident.prevent_delete",
 	},
+	"BMW Handover": {
+		# A cancelled handover still carries the void reason, manifest number and
+		# receiver acknowledgement — it is a record, not scrap.
+		"on_trash": "facility_management.biomedical_waste.doctype.bmw_handover.bmw_handover.prevent_delete",
+	},
+	"BMW Department": {
+		# Deleting a department would orphan the `department` link on historical bags.
+		"on_trash": "facility_management.biomedical_waste.doctype.bmw_department.bmw_department.prevent_delete",
+	},
 }

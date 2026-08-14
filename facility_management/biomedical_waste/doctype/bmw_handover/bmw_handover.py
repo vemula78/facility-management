@@ -114,3 +114,11 @@ class BMWHandover(Document):
 
 		for row in self.bags:
 			frappe.db.set_value("BMW Bag", row.bag, {"status": "Open", "handover": None})
+
+
+def prevent_delete(doc, method=None):
+	"""Hard deletion is refused outright — the BMW register is append-only. A cancelled
+	handover retains its void reason, manifest number and receiver acknowledgement."""
+	raise frappe.PermissionError(
+		"BMW records are never deleted — cancel the handover with a void reason instead"
+	)

@@ -8,8 +8,8 @@ BMW Settings fields and aggregate, non-void category totals grouped by
 month/year. Never exposes individual bag rows, department names, handover
 manifest numbers, receiver names, or anything from BMW Accident. Category
 totals are filtered on BMW Bag's own `status != 'Void'`, not on the linked
-handover's status, so a bag reopened to Open by a voided handover is
-correctly excluded.
+handover's status: the aggregate excludes only bags explicitly voided, and
+counts everything else.
 """
 
 import frappe
@@ -75,10 +75,13 @@ def get_context(context):
 def _monthly_category_totals(year):
 	"""Aggregate, non-void category totals for the given year, grouped by month.
 
-	Filters on BMW Bag.status directly (never on BMW Handover.status) so a bag
-	whose handover was voided — and which therefore reverted to Open — is
-	correctly excluded from the disclosure, regardless of what the handover
-	record shows.
+	Filters on BMW Bag.status directly (never on BMW Handover.status): the only
+	bags excluded are those with status == 'Void'. Bags that are 'Open' —
+	including ones reopened by a cancelled handover — and bags that are
+	'Handed Over' are BOTH counted, because waste is counted at the point of
+	generation, not at disposal. This matches the original plugin's behaviour.
+	A bag recorded in error is withdrawn from these totals by voiding the bag
+	itself (Open -> Void with a void reason), not by cancelling its handover.
 	"""
 	rows = frappe.db.sql(
 		"""

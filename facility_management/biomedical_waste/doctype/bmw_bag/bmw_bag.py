@@ -63,7 +63,15 @@ class BMWBag(Document):
 	def validate_status_not_hand_edited(self):
 		"""status is owned by BMW Handover submit/cancel, which write it via frappe.db.set_value
 		and therefore never pass through this controller. Any status change that does reach
-		validate() is a direct user edit, and is refused."""
+		validate() is a direct user edit, and is refused — with exactly one exception, the
+		void path below (the port of the original plugin's void_bag()).
+
+		Permitted direct transition: Open -> Void, and only when
+		  * void_reason holds real, non-whitespace content saved on the same edit, and
+		  * the bag is not claimed by a handover (self.handover is empty). A bag already
+		    on a handover must be withdrawn by cancelling that handover, not voided here.
+		Everything else (Open -> Handed Over by hand, Void -> anything, Handed Over ->
+		anything) stays blocked exactly as before."""
 		if self.is_new():
 			if self.status and self.status != "Open":
 				frappe.throw(
@@ -73,9 +81,29 @@ class BMWBag(Document):
 
 		previous = self.get_doc_before_save()
 		if previous and previous.status != self.status:
+			if previous.status == "Open" and self.status == "Void":
+				self.validate_void()
+				return
 			frappe.throw(
 				_("Bag status is set by the handover workflow and cannot be edited directly."),
 				title=_("Invalid Status"),
+			)
+
+	def validate_void(self):
+		"""Guard rails for the single permitted direct status transition, Open -> Void."""
+		if not (self.void_reason or "").strip():
+			frappe.throw(
+				_("A reason is required to void a bag. Set Void Reason before saving."),
+				title=_("Void Reason Required"),
+			)
+
+		if self.handover:
+			frappe.throw(
+				_(
+					"Bag {0} is part of handover {1} and cannot be voided directly. "
+					"Cancel the handover instead."
+				).format(self.name, self.handover),
+				title=_("Bag Claimed by Handover"),
 			)
 
 

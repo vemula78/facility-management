@@ -26,6 +26,7 @@ import frappe
 from facility_management.equipment_maintenance.utils import (
 	asset_classes_for_user,
 	is_trade_scoped_user,
+	supplier_for_user,
 )
 
 
@@ -186,6 +187,70 @@ def pm_schedule_has_permission(doc, ptype=None, user=None):
 	# single-record load.
 	if isinstance(doc, str):
 		return True
+	reference_doctype = doc.get("reference_doctype") if hasattr(doc, "get") else None
+	reference_name = doc.get("reference_name") if hasattr(doc, "get") else None
+	asset_class = _asset_class_for_reference(reference_doctype, reference_name)
+	return bool(asset_class) and asset_class in classes
+
+
+def ticket_query_conditions(user=None):
+	"""SQL fragment ANDed onto every Breakdown/Repair Ticket list query.
+
+	Two independent, mutually exclusive scoping paths, unlike every other
+	doctype in this file which has only trade-scoping:
+
+	* A vendor-portal user (mapped to a Supplier via Contact, see
+	  utils.supplier_for_user()) sees only tickets assigned to their own
+	  Supplier — trade never applies to a vendor, a vendor's assigned tickets
+	  can span any trade.
+	* Everyone else falls back to the same trade-scoping pattern as PM
+	  Schedule/Record (reference_doctype = 'Asset' restriction, fail-closed
+	  1=0 for a trade-scoped user whose trade owns no classes, unrestricted
+	  for uninvolved roles).
+
+	A user who is somehow both vendor-mapped and holds an engineering role
+	(not a configuration this app's own role grants would normally produce)
+	is scoped as a vendor — the narrower, portal-specific identity takes
+	precedence, matching HEM's exclusive vendor-role model.
+	"""
+	user = user or frappe.session.user
+	supplier = supplier_for_user(user)
+	if supplier:
+		return "(`tabBreakdown Repair Ticket`.`vendor` = {0})".format(frappe.db.escape(supplier))
+	scoped, classes = _allowed_classes(user)
+	if not scoped:
+		return ""
+	if not classes:
+		return "1=0"
+	escaped = ", ".join(frappe.db.escape(c) for c in classes)
+	return (
+		"(`tabBreakdown Repair Ticket`.`reference_doctype` = 'Asset' and "
+		"`tabBreakdown Repair Ticket`.`reference_name` in "
+		"(select `tabAsset`.`name` from `tabAsset` "
+		"where `tabAsset`.`hem_asset_class` in ({0})))"
+	).format(escaped)
+
+
+def ticket_has_permission(doc, ptype=None, user=None):
+	"""Gate a direct single-Ticket load/write for a vendor or a trade-scoped user."""
+	user = user or frappe.session.user
+	# Frappe calls this hook for the doctype-level check too (e.g. opening the
+	# Ticket list in Desk), passing doc="Breakdown Repair Ticket" — a bare
+	# string with no vendor/reference to resolve. That check must pass so the
+	# list view loads; the actual row-level restriction happens via
+	# ticket_query_conditions for lists and via this same hook (with a real
+	# document instance) for a single-record load.
+	if isinstance(doc, str):
+		return True
+	supplier = supplier_for_user(user)
+	if supplier:
+		vendor = doc.get("vendor") if hasattr(doc, "get") else None
+		return bool(vendor) and vendor == supplier
+	scoped, classes = _allowed_classes(user)
+	if not scoped:
+		return True
+	if not classes:
+		return False
 	reference_doctype = doc.get("reference_doctype") if hasattr(doc, "get") else None
 	reference_name = doc.get("reference_name") if hasattr(doc, "get") else None
 	asset_class = _asset_class_for_reference(reference_doctype, reference_name)

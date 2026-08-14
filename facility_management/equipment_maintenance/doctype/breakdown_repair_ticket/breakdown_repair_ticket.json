@@ -1,0 +1,166 @@
+{
+	"actions": [],
+	"allow_rename": 0,
+	"autoname": "format:TICKET-{reference_name}-{#####}",
+	"creation": "2026-08-14 00:00:00.000000",
+	"doctype": "DocType",
+	"editable_grid": 1,
+	"engine": "InnoDB",
+	"field_order": [
+		"reference_doctype",
+		"reference_name",
+		"trade",
+		"priority",
+		"status",
+		"vendor",
+		"sla_response_hours",
+		"opened_at",
+		"responded_at",
+		"resolved_at",
+		"closed_at",
+		"downtime_start",
+		"downtime_end",
+		"root_cause",
+		"corrective_action"
+	],
+	"fields": [
+		{
+			"description": "Only \"Asset\" is supported by this build (validated server-side) — \"Vehicle\" is reserved for Fleet's later reuse of this same doctype, not yet implemented.",
+			"fieldname": "reference_doctype",
+			"fieldtype": "Link",
+			"in_list_view": 1,
+			"in_standard_filter": 1,
+			"label": "Reference Type",
+			"options": "DocType",
+			"reqd": 1
+		},
+		{
+			"fieldname": "reference_name",
+			"fieldtype": "Dynamic Link",
+			"in_list_view": 1,
+			"label": "Reference",
+			"options": "reference_doctype",
+			"reqd": 1
+		},
+		{
+			"description": "Denormalized from the reference Asset's Asset Class at save time for reporting/filtering; not hand-edited. Trade-scoped permission checks re-derive from the live reference, this field is not itself trusted for security.",
+			"fieldname": "trade",
+			"fieldtype": "Link",
+			"in_list_view": 1,
+			"in_standard_filter": 1,
+			"label": "Trade",
+			"options": "Trade",
+			"read_only": 1
+		},
+		{
+			"default": "Medium",
+			"fieldname": "priority",
+			"fieldtype": "Select",
+			"in_list_view": 1,
+			"in_standard_filter": 1,
+			"label": "Priority",
+			"options": "Low\nMedium\nHigh\nCritical",
+			"reqd": 1
+		},
+		{
+			"default": "Open",
+			"fieldname": "status",
+			"fieldtype": "Select",
+			"in_list_view": 1,
+			"in_standard_filter": 1,
+			"label": "Status",
+			"options": "Open\nAssigned\nIn Progress\nResolved\nClosed\nCancelled",
+			"reqd": 1
+		},
+		{
+			"description": "The vendor assigned to work this ticket. A vendor-portal user mapped to this Supplier (via Contact) can progress status forward but cannot reassign this field, close, or cancel the ticket — enforced in validate(), not just hidden in the UI.",
+			"fieldname": "vendor",
+			"fieldtype": "Link",
+			"in_list_view": 1,
+			"in_standard_filter": 1,
+			"label": "Vendor",
+			"options": "Supplier"
+		},
+		{
+			"description": "Snapshotted from the reference Asset's active AMC/CMC/Warranty Contract at ticket-creation time (before_insert) — not a live link, so a later contract change does not rewrite the SLA an already-open ticket was raised under.",
+			"fieldname": "sla_response_hours",
+			"fieldtype": "Int",
+			"label": "SLA Response (Hours)",
+			"read_only": 1
+		},
+		{
+			"fieldname": "opened_at",
+			"fieldtype": "Datetime",
+			"in_list_view": 1,
+			"label": "Opened At",
+			"read_only": 1
+		},
+		{
+			"description": "Set server-side the first time status leaves \"Open\" — not user-editable, and never overwritten once set.",
+			"fieldname": "responded_at",
+			"fieldtype": "Datetime",
+			"label": "Responded At",
+			"read_only": 1
+		},
+		{
+			"description": "Set server-side the first time status becomes \"Resolved\".",
+			"fieldname": "resolved_at",
+			"fieldtype": "Datetime",
+			"label": "Resolved At",
+			"read_only": 1
+		},
+		{
+			"description": "Set server-side the first time status becomes \"Closed\".",
+			"fieldname": "closed_at",
+			"fieldtype": "Datetime",
+			"label": "Closed At",
+			"read_only": 1
+		},
+		{
+			"fieldname": "downtime_start",
+			"fieldtype": "Datetime",
+			"label": "Downtime Start"
+		},
+		{
+			"fieldname": "downtime_end",
+			"fieldtype": "Datetime",
+			"label": "Downtime End"
+		},
+		{
+			"fieldname": "root_cause",
+			"fieldtype": "Small Text",
+			"label": "Root Cause"
+		},
+		{
+			"fieldname": "corrective_action",
+			"fieldtype": "Small Text",
+			"label": "Corrective Action"
+		}
+	],
+	"index_web_pages_for_search": 1,
+	"links": [],
+	"modified": "2026-08-14 00:00:00.000000",
+	"modified_by": "Administrator",
+	"module": "Equipment Maintenance",
+	"name": "Breakdown Repair Ticket",
+	"naming_rule": "Expression",
+	"owner": "Administrator",
+	"permissions": [
+		{
+			"create": 1,
+			"delete": 0,
+			"email": 1,
+			"export": 1,
+			"print": 1,
+			"read": 1,
+			"report": 1,
+			"role": "System Manager",
+			"share": 1,
+			"write": 1
+		}
+	],
+	"sort_field": "creation",
+	"sort_order": "DESC",
+	"states": [],
+	"track_changes": 1
+}

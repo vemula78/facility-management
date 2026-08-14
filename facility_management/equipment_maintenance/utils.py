@@ -138,3 +138,29 @@ def default_trade_for_class(asset_class):
 	if not asset_class:
 		return None
 	return frappe.db.get_value("Asset Class", asset_class, "default_trade") or None
+
+
+def supplier_for_user(user=None):
+	"""The Supplier this session's user is a vendor-portal contact for, or None.
+
+	Mirrors HEM's `vendor_for_current_user()`, but there is no bespoke
+	vendor-user field to read here — the plan calls for ERPNext's native
+	Contact-linked-to-Supplier portal pattern instead: a Contact whose `user`
+	field is this session's user, whose `links` child table (doctype
+	"Dynamic Link") has a row with link_doctype = "Supplier". A user with no
+	such Contact, or a Contact linked to something other than a Supplier
+	(e.g. a Customer), returns None — fail-closed, same as
+	get_user_department(): every caller must treat None as "not a vendor",
+	never as "unrestricted".
+	"""
+	user = _user(user)
+	if user in ("Guest", None, "Administrator"):
+		return None
+	contact = frappe.db.get_value("Contact", {"user": user}, "name")
+	if not contact:
+		return None
+	return frappe.db.get_value(
+		"Dynamic Link",
+		{"parent": contact, "parenttype": "Contact", "link_doctype": "Supplier"},
+		"link_name",
+	)

@@ -1,0 +1,121 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "autoname": "field:bag_no",
+ "creation": "2026-08-14 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "bag_no",
+  "department",
+  "category",
+  "is_cytotoxic",
+  "is_ewaste",
+  "weight_kg",
+  "generated_at",
+  "status",
+  "handover",
+  "void_reason"
+ ],
+ "fields": [
+  {
+   "fieldname": "bag_no",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Bag No",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "department",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Department",
+   "options": "BMW Department",
+   "reqd": 1
+  },
+  {
+   "fieldname": "category",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Category",
+   "options": "Yellow\nRed\nWhite\nBlue",
+   "reqd": 1
+  },
+  {
+   "depends_on": "eval:doc.category=='Yellow'",
+   "description": "Only permitted on Yellow category bags.",
+   "fieldname": "is_cytotoxic",
+   "fieldtype": "Check",
+   "label": "Is Cytotoxic"
+  },
+  {
+   "fieldname": "is_ewaste",
+   "fieldtype": "Check",
+   "label": "Is E-Waste"
+  },
+  {
+   "fieldname": "weight_kg",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Weight (kg)",
+   "precision": "2",
+   "reqd": 1
+  },
+  {
+   "fieldname": "generated_at",
+   "fieldtype": "Datetime",
+   "label": "Generated At",
+   "reqd": 1
+  },
+  {
+   "default": "Open",
+   "description": "Maintained by controller code only (handover submit/cancel). Not directly editable.",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Open\nHanded Over\nVoid",
+   "read_only": 1
+  },
+  {
+   "fieldname": "handover",
+   "fieldtype": "Link",
+   "label": "Handover",
+   "options": "BMW Handover",
+   "read_only": 1
+  },
+  {
+   "fieldname": "void_reason",
+   "fieldtype": "Small Text",
+   "label": "Void Reason"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-08-14 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Biomedical Waste",
+ "name": "BMW Bag",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 0,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

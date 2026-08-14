@@ -1,0 +1,186 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "autoname": "naming_series:",
+ "creation": "2026-08-14 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series",
+  "handover_at",
+  "vehicle_no",
+  "manifest_no",
+  "column_break_receiver",
+  "receiver_name",
+  "receiver_ack",
+  "section_break_bags",
+  "bags",
+  "section_break_totals",
+  "yellow_kg",
+  "red_kg",
+  "white_kg",
+  "column_break_totals",
+  "blue_kg",
+  "cytotoxic_kg",
+  "section_break_void",
+  "void_reason",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "default": "BMW-HO-.YYYY.-.####",
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Series",
+   "options": "BMW-HO-.YYYY.-.####",
+   "reqd": 1,
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "handover_at",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "Handover At",
+   "reqd": 1
+  },
+  {
+   "description": "Plain text. The CBWTF pickup vehicle is not a hospital asset and is deliberately not linked to any Vehicle record.",
+   "fieldname": "vehicle_no",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Vehicle No"
+  },
+  {
+   "fieldname": "manifest_no",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Manifest No",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_receiver",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "receiver_name",
+   "fieldtype": "Data",
+   "label": "Receiver Name"
+  },
+  {
+   "description": "Acknowledgement reference as recorded by the receiver (signature/ack slip reference).",
+   "fieldname": "receiver_ack",
+   "fieldtype": "Data",
+   "label": "Receiver Acknowledgement"
+  },
+  {
+   "fieldname": "section_break_bags",
+   "fieldtype": "Section Break",
+   "label": "Bags"
+  },
+  {
+   "description": "Maximum 500 bags per handover.",
+   "fieldname": "bags",
+   "fieldtype": "Table",
+   "label": "Bags",
+   "options": "BMW Handover Bag"
+  },
+  {
+   "fieldname": "section_break_totals",
+   "fieldtype": "Section Break",
+   "label": "Totals"
+  },
+  {
+   "description": "Total weight of ALL Yellow bags, cytotoxic ones included. Cytotoxic (kg) is a subset of this figure, not an addition to it.",
+   "fieldname": "yellow_kg",
+   "fieldtype": "Float",
+   "label": "Yellow (kg)",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "red_kg",
+   "fieldtype": "Float",
+   "label": "Red (kg)",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "white_kg",
+   "fieldtype": "Float",
+   "label": "White (kg)",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_totals",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "blue_kg",
+   "fieldtype": "Float",
+   "label": "Blue (kg)",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "description": "SUBSET of Yellow (kg), not a sixth disjoint stream. Total consignment weight = yellow + red + white + blue ONLY. Never add cytotoxic_kg to that sum.",
+   "fieldname": "cytotoxic_kg",
+   "fieldtype": "Float",
+   "label": "Cytotoxic (kg)",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_void",
+   "fieldtype": "Section Break",
+   "label": "Void"
+  },
+  {
+   "allow_on_submit": 1,
+   "description": "Required before this handover may be cancelled (voided).",
+   "fieldname": "void_reason",
+   "fieldtype": "Small Text",
+   "label": "Void Reason"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "BMW Handover",
+   "print_hide": 1,
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2026-08-14 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Biomedical Waste",
+ "name": "BMW Handover",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "amend": 1,
+   "cancel": 1,
+   "create": 1,
+   "delete": 0,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

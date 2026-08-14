@@ -18,6 +18,22 @@ schedule_status_before_roll), rather than subtracting a periodicity interval
 from whatever the Schedule currently holds — an administrator could have
 hand-edited the Schedule between submit and cancel, and subtracting an
 interval from a since-changed value would silently produce the wrong date.
+
+That snapshot-restore design is only correct when Records against the same
+Schedule are cancelled in strict reverse-submission (LIFO) order: each
+Record's snapshot is "the Schedule's state right before THIS Record's own
+roll", which is only still the Schedule's live state if no later Record has
+since rolled it forward again. Cancelling an older Record while a newer one
+is still submitted would silently discard the newer Record's roll-forward —
+found by Antigravity audit, reproduced against a two-Record sequence
+(Schedule rolled by Record A, rolled again by Record B, then Record A
+cancelled first: the Schedule reverted to pre-A state, erasing Record B's
+still-valid completion with no error or warning). on_cancel below refuses
+the cancel outright unless this Record is the most recently submitted one
+still standing for its Schedule, rather than attempt a more clever revert —
+the correct chained revert here (walk every still-submitted Record's
+snapshot back to the true origin) is significant extra complexity for an
+edge case that should simply not be allowed to happen silently.
 """
 
 import frappe
@@ -57,7 +73,35 @@ class PMRecord(Document):
 		self._roll_schedule_forward()
 
 	def on_cancel(self):
+		self._forbid_out_of_order_cancel()
 		self._revert_schedule()
+
+	def _forbid_out_of_order_cancel(self):
+		# A later Record's roll-forward is only safe to undo by THIS Record's
+		# snapshot if no other submitted Record for the same Schedule was
+		# created after this one — otherwise this Record's snapshot predates
+		# that later roll and would erase it. "Created after" (creation
+		# timestamp), not completion_date, is what matters: it is submission
+		# order, not maintenance-date order, that determines which snapshot is
+		# still valid.
+		newer = frappe.db.exists(
+			"PM Record",
+			{
+				"pm_schedule": self.pm_schedule,
+				"docstatus": 1,
+				"name": ["!=", self.name],
+				"creation": [">", self.creation],
+			},
+		)
+		if newer:
+			frappe.throw(
+				_(
+					"{0} cannot be cancelled while a more recently submitted PM Record "
+					"({1}) still stands against the same PM Schedule — cancel that one "
+					"first."
+				).format(self.name, newer),
+				title=_("PM Record"),
+			)
 
 	def _roll_schedule_forward(self):
 		schedule = frappe.get_doc("PM Schedule", self.pm_schedule)

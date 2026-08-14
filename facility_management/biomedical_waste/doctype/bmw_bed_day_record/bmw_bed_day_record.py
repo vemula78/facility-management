@@ -11,12 +11,15 @@ class BMWBedDayRecord(Document):
 		self.validate_unique_year_month()
 
 	def validate_unique_year_month(self):
-		existing = frappe.db.get_value(
-			"BMW Bed-Day Record",
-			{"year": self.year, "month": self.month, "name": ["!=", self.name]},
-			"name",
-		)
-		if existing:
+		"""Autoname is deterministic (BMW-BD-{year}-{month}), so a duplicate insert
+		would otherwise surface as a raw DB primary-key IntegrityError rather than a
+		clean validation message. Excluding by `name` doesn't work here: a duplicate
+		row necessarily has the SAME name as the existing one before it's even
+		inserted, so that exclusion would wrongly exclude the very row we need to
+		find. Compute the expected name instead and check for that."""
+		expected_name = f"BMW-BD-{self.year}-{self.month}"
+		existing = frappe.db.exists("BMW Bed-Day Record", expected_name)
+		if existing and existing != self.name:
 			frappe.throw(
 				_("A Bed-Day Record for {0}/{1} already exists ({2}).").format(
 					self.month, self.year, existing

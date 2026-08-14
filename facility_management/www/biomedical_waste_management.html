@@ -1,0 +1,125 @@
+{% extends "templates/web.html" %}
+
+{% block page_content %}
+<div class="bmw-public-disclosure" style="max-width: 900px; margin: 0 auto; padding: 2rem 1rem;">
+	<header style="text-align:center; margin-bottom: 2rem;">
+		<p>SSSIHMS &middot; Whitefield</p>
+		<h1>Biomedical Waste Management Disclosure</h1>
+		<span>Public information under the Bio-Medical Waste Management Rules and CPCB guidelines</span>
+	</header>
+
+	<section aria-label="Waste generation summary" style="display:flex; gap:2rem; justify-content:center; margin-bottom:2rem;">
+		<div><strong>{{ "%.2f"|format(daily_average) }}</strong><br><span>kg/day average, current month to date</span></div>
+		<div><strong>{{ "%.2f"|format(annual_total) }}</strong><br><span>kg generated in {{ year }}</span></div>
+		<div><strong>{{ settings.bed_count or 0 }}</strong><br><span>authorised beds</span></div>
+	</section>
+
+	<section>
+		<h2>Healthcare Facility</h2>
+		<dl>
+			<dt>Facility</dt><dd>{{ settings.facility_name or "Not set" }}</dd>
+			<dt>Contact address</dt><dd>{{ settings.facility_address or "Not set" }}</dd>
+			<dt>Phone</dt><dd>{{ settings.contact_phone or "Not set" }}</dd>
+			<dt>Email</dt><dd>{{ settings.contact_email or "Not set" }}</dd>
+		</dl>
+	</section>
+
+	<section>
+		<h2>Authorisations and Consents</h2>
+		<dl>
+			<dt>KSPCB BMW authorisation</dt>
+			<dd>{{ settings.kspcb_auth_no or "Not set" }}{% if settings.kspcb_auth_valid_until %} (valid until {{ settings.kspcb_auth_valid_until }}){% endif %}</dd>
+			<dt>Consent under the Water Act, 1974</dt>
+			<dd>{{ settings.water_consent_no or "Not set" }}{% if settings.water_consent_valid_until %} (valid until {{ settings.water_consent_valid_until }}){% endif %}</dd>
+			<dt>Consent under the Air Act, 1981</dt>
+			<dd>{{ settings.air_consent_no or "Not set" }}{% if settings.air_consent_valid_until %} (valid until {{ settings.air_consent_valid_until }}){% endif %}</dd>
+		</dl>
+	</section>
+
+	<section>
+		<h2>Treatment and Disposal</h2>
+		<dl>
+			<dt>Mode of disposal</dt>
+			<dd>{% if settings.disposal_mode == "Captive" %}Captive treatment facility{% else %}Common biomedical waste treatment facility (CBWTF){% endif %}</dd>
+			{% if settings.disposal_mode == "Captive" %}
+			<dt>Waste treated</dt><dd>{{ "%.2f"|format(settings.captive_treated_kg_day or 0) }} kg/day</dd>
+			<dt>Treatment equipment</dt><dd>{{ settings.captive_equipment_details or "Not set" }}</dd>
+			<dt>Number and capacity</dt><dd>{{ settings.captive_equipment_count_capacity or "Not set" }}</dd>
+			<dt>Operating parameters</dt><dd>{{ settings.captive_operating_parameters or "Not set" }}</dd>
+			{% else %}
+			<dt>CBWTF name</dt><dd>{{ settings.cbwtf_name or "Not set" }}</dd>
+			<dt>CBWTF address</dt><dd>{{ settings.cbwtf_address or "Not set" }}</dd>
+			{% endif %}
+		</dl>
+	</section>
+
+	<section>
+		<div style="display:flex; justify-content:space-between; align-items:center;">
+			<h2>Monthly Category-wise Waste Generation &mdash; {{ year }}</h2>
+			<form method="get">
+				<label for="bmw-public-year">Reporting year</label>
+				<select id="bmw-public-year" name="year" onchange="this.form.submit()">
+					{% for y in year_options %}
+					<option value="{{ y }}" {% if y == year %}selected{% endif %}>{{ y }}</option>
+					{% endfor %}
+				</select>
+				<noscript><button type="submit">View</button></noscript>
+			</form>
+		</div>
+		<div style="overflow-x:auto;">
+			<table style="width:100%; border-collapse: collapse;">
+				<thead>
+					<tr><th>Month</th><th>Yellow (kg)</th><th>Red (kg)</th><th>White (kg)</th><th>Blue (kg)</th><th>Total (kg)</th></tr>
+				</thead>
+				<tbody>
+					{% set month_names = ["January","February","March","April","May","June","July","August","September","October","November","December"] %}
+					{% for row in months %}
+					<tr>
+						<th scope="row">{{ month_names[loop.index0] }}</th>
+						<td>{{ "%.2f"|format(row.Yellow) }}</td>
+						<td>{{ "%.2f"|format(row.Red) }}</td>
+						<td>{{ "%.2f"|format(row.White) }}</td>
+						<td>{{ "%.2f"|format(row.Blue) }}</td>
+						<td>{{ "%.2f"|format(row.Yellow + row.Red + row.White + row.Blue) }}</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+				<tfoot>
+					<tr>
+						<th>Annual total</th>
+						<td>{{ "%.2f"|format(annual_totals.Yellow) }}</td>
+						<td>{{ "%.2f"|format(annual_totals.Red) }}</td>
+						<td>{{ "%.2f"|format(annual_totals.White) }}</td>
+						<td>{{ "%.2f"|format(annual_totals.Blue) }}</td>
+						<td>{{ "%.2f"|format(annual_total) }}</td>
+					</tr>
+				</tfoot>
+			</table>
+		</div>
+	</section>
+
+	<section>
+		<h2>Training and Immunisation</h2>
+		<dl>
+			<dt>BMW training</dt>
+			<dd>
+				{% if settings.training_year and settings.training_count is not none %}
+					{{ settings.training_count }} training programme(s) recorded for {{ settings.training_year }}
+				{% else %}
+					Not set
+				{% endif %}
+			</dd>
+			<dt>Immunisation status of workers handling BMW</dt>
+			<dd>
+				{% if settings.bmw_workers_total %}
+					{{ settings.bmw_workers_immunized or 0 }} of {{ settings.bmw_workers_total }} workers
+				{% else %}
+					Not set
+				{% endif %}
+			</dd>
+		</dl>
+	</section>
+
+	<footer style="text-align:center; margin-top:2rem; color:#888;">Live tracker data. Page generated on {{ generated_on }}.</footer>
+</div>
+{% endblock %}

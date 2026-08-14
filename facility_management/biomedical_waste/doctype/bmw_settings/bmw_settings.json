@@ -1,0 +1,326 @@
+{
+ "actions": [],
+ "creation": "2026-08-14 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "facility_section",
+  "facility_name",
+  "facility_address",
+  "contact_phone",
+  "contact_email",
+  "bed_count",
+  "authorisation_section",
+  "kspcb_auth_no",
+  "kspcb_auth_valid_until",
+  "water_consent_no",
+  "water_consent_valid_until",
+  "air_consent_no",
+  "air_consent_valid_until",
+  "capacity_section",
+  "auth_capacity_yellow_kg_day",
+  "auth_capacity_red_kg_day",
+  "auth_capacity_white_kg_day",
+  "auth_capacity_blue_kg_day",
+  "disposal_section",
+  "disposal_mode",
+  "cbwtf_name",
+  "cbwtf_address",
+  "cbwtf_monthly_cap_kg",
+  "cbwtf_excess_rate_per_kg",
+  "captive_treated_kg_day",
+  "captive_equipment_details",
+  "captive_equipment_count_capacity",
+  "captive_operating_parameters",
+  "storage_section",
+  "storage_provision",
+  "committee_section",
+  "committee_exists",
+  "committee_meetings_count",
+  "committee_minutes_note",
+  "training_section",
+  "training_year",
+  "training_count",
+  "personnel_trained",
+  "personnel_trained_induction",
+  "personnel_not_trained",
+  "training_manual_available",
+  "bmw_workers_total",
+  "bmw_workers_immunized"
+ ],
+ "fields": [
+  {
+   "fieldname": "facility_section",
+   "fieldtype": "Section Break",
+   "label": "Facility"
+  },
+  {
+   "description": "UPDATE ME — placeholder value, confirm against the real facility name before any statutory use.",
+   "fieldname": "facility_name",
+   "fieldtype": "Data",
+   "label": "Facility Name"
+  },
+  {
+   "description": "UPDATE ME — placeholder value.",
+   "fieldname": "facility_address",
+   "fieldtype": "Small Text",
+   "label": "Facility Address"
+  },
+  {
+   "description": "UPDATE ME — placeholder value.",
+   "fieldname": "contact_phone",
+   "fieldtype": "Data",
+   "label": "Contact Phone"
+  },
+  {
+   "description": "UPDATE ME — placeholder value.",
+   "fieldname": "contact_email",
+   "fieldtype": "Data",
+   "label": "Contact Email"
+  },
+  {
+   "description": "UPDATE ME — placeholder value.",
+   "fieldname": "bed_count",
+   "fieldtype": "Int",
+   "label": "Bed Count"
+  },
+  {
+   "fieldname": "authorisation_section",
+   "fieldtype": "Section Break",
+   "label": "Authorisations and Consents"
+  },
+  {
+   "description": "PLACEHOLDER — NOT a real authorisation number. Replace with the current KSPCB BMW authorisation number before this record is relied on for any filing.",
+   "fieldname": "kspcb_auth_no",
+   "fieldtype": "Data",
+   "label": "KSPCB BMW Authorisation No."
+  },
+  {
+   "description": "NEEDS CONFIRMING — the previous authorisation's validity has already lapsed and the renewed date is not yet available. Do not treat the stored value as current.",
+   "fieldname": "kspcb_auth_valid_until",
+   "fieldtype": "Date",
+   "label": "KSPCB BMW Authorisation Valid Until"
+  },
+  {
+   "description": "PLACEHOLDER — confirm before use.",
+   "fieldname": "water_consent_no",
+   "fieldtype": "Data",
+   "label": "Water Act Consent No."
+  },
+  {
+   "description": "NEEDS CONFIRMING.",
+   "fieldname": "water_consent_valid_until",
+   "fieldtype": "Date",
+   "label": "Water Act Consent Valid Until"
+  },
+  {
+   "description": "PLACEHOLDER — confirm before use.",
+   "fieldname": "air_consent_no",
+   "fieldtype": "Data",
+   "label": "Air Act Consent No."
+  },
+  {
+   "description": "NEEDS CONFIRMING.",
+   "fieldname": "air_consent_valid_until",
+   "fieldtype": "Date",
+   "label": "Air Act Consent Valid Until"
+  },
+  {
+   "fieldname": "capacity_section",
+   "fieldtype": "Section Break",
+   "label": "Authorised Daily Handling Capacity"
+  },
+  {
+   "description": "kg/day. 0 disables the exceedance check for this category. UPDATE ME.",
+   "fieldname": "auth_capacity_yellow_kg_day",
+   "fieldtype": "Float",
+   "label": "Yellow (kg/day)",
+   "precision": "2"
+  },
+  {
+   "description": "kg/day. 0 disables the exceedance check for this category. UPDATE ME.",
+   "fieldname": "auth_capacity_red_kg_day",
+   "fieldtype": "Float",
+   "label": "Red (kg/day)",
+   "precision": "2"
+  },
+  {
+   "description": "kg/day. 0 disables the exceedance check for this category. UPDATE ME.",
+   "fieldname": "auth_capacity_white_kg_day",
+   "fieldtype": "Float",
+   "label": "White (kg/day)",
+   "precision": "2"
+  },
+  {
+   "description": "kg/day. 0 disables the exceedance check for this category. UPDATE ME.",
+   "fieldname": "auth_capacity_blue_kg_day",
+   "fieldtype": "Float",
+   "label": "Blue (kg/day)",
+   "precision": "2"
+  },
+  {
+   "fieldname": "disposal_section",
+   "fieldtype": "Section Break",
+   "label": "Treatment and Disposal"
+  },
+  {
+   "default": "CBWTF",
+   "fieldname": "disposal_mode",
+   "fieldtype": "Select",
+   "label": "Mode of Disposal",
+   "options": "CBWTF\nCaptive"
+  },
+  {
+   "description": "PLACEHOLDER — confirm before use.",
+   "fieldname": "cbwtf_name",
+   "fieldtype": "Data",
+   "label": "CBWTF Name"
+  },
+  {
+   "description": "PLACEHOLDER — confirm before use.",
+   "fieldname": "cbwtf_address",
+   "fieldtype": "Small Text",
+   "label": "CBWTF Address"
+  },
+  {
+   "description": "kg/month. 0 disables the exceedance check. UPDATE ME.",
+   "fieldname": "cbwtf_monthly_cap_kg",
+   "fieldtype": "Float",
+   "label": "CBWTF Monthly Cap (kg)",
+   "precision": "2"
+  },
+  {
+   "description": "Rate billed per kg above the monthly cap. UPDATE ME.",
+   "fieldname": "cbwtf_excess_rate_per_kg",
+   "fieldtype": "Currency",
+   "label": "CBWTF Excess Rate (per kg)"
+  },
+  {
+   "depends_on": "eval:doc.disposal_mode=='Captive'",
+   "description": "kg/day treated captively. UPDATE ME.",
+   "fieldname": "captive_treated_kg_day",
+   "fieldtype": "Float",
+   "label": "Captive Treated (kg/day)",
+   "precision": "2"
+  },
+  {
+   "depends_on": "eval:doc.disposal_mode=='Captive'",
+   "fieldname": "captive_equipment_details",
+   "fieldtype": "Small Text",
+   "label": "Captive Treatment Equipment"
+  },
+  {
+   "depends_on": "eval:doc.disposal_mode=='Captive'",
+   "fieldname": "captive_equipment_count_capacity",
+   "fieldtype": "Small Text",
+   "label": "Captive Equipment Number and Capacity"
+  },
+  {
+   "depends_on": "eval:doc.disposal_mode=='Captive'",
+   "fieldname": "captive_operating_parameters",
+   "fieldtype": "Small Text",
+   "label": "Captive Operating Parameters"
+  },
+  {
+   "fieldname": "storage_section",
+   "fieldtype": "Section Break",
+   "label": "Storage — Form IV Item 5"
+  },
+  {
+   "description": "Storage/treatment/transport provision narrative feeding Form IV item 5. UPDATE ME.",
+   "fieldname": "storage_provision",
+   "fieldtype": "Small Text",
+   "label": "Storage Provision"
+  },
+  {
+   "fieldname": "committee_section",
+   "fieldtype": "Section Break",
+   "label": "Waste Management Committee — Form IV Item 6"
+  },
+  {
+   "fieldname": "committee_exists",
+   "fieldtype": "Check",
+   "label": "Committee Exists"
+  },
+  {
+   "fieldname": "committee_meetings_count",
+   "fieldtype": "Int",
+   "label": "Committee Meetings Count"
+  },
+  {
+   "fieldname": "committee_minutes_note",
+   "fieldtype": "Small Text",
+   "label": "Committee Minutes Note"
+  },
+  {
+   "fieldname": "training_section",
+   "fieldtype": "Section Break",
+   "label": "Training — Form IV Item 7"
+  },
+  {
+   "fieldname": "training_year",
+   "fieldtype": "Int",
+   "label": "Training Year"
+  },
+  {
+   "fieldname": "training_count",
+   "fieldtype": "Int",
+   "label": "Training Programmes Count"
+  },
+  {
+   "fieldname": "personnel_trained",
+   "fieldtype": "Int",
+   "label": "Personnel Trained"
+  },
+  {
+   "fieldname": "personnel_trained_induction",
+   "fieldtype": "Int",
+   "label": "Personnel Trained at Induction"
+  },
+  {
+   "fieldname": "personnel_not_trained",
+   "fieldtype": "Int",
+   "label": "Personnel Not Yet Trained"
+  },
+  {
+   "fieldname": "training_manual_available",
+   "fieldtype": "Check",
+   "label": "Standard Training Manual Available"
+  },
+  {
+   "fieldname": "bmw_workers_total",
+   "fieldtype": "Int",
+   "label": "BMW Workers Total"
+  },
+  {
+   "fieldname": "bmw_workers_immunized",
+   "fieldtype": "Int",
+   "label": "BMW Workers Immunised"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2026-08-14 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Biomedical Waste",
+ "name": "BMW Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 0,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

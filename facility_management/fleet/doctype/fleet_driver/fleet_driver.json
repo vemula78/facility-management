@@ -1,0 +1,185 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "autoname": "field:driver_code",
+ "creation": "2026-08-14 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "driver_code",
+  "driver_name",
+  "mobile",
+  "alternate_contact",
+  "license_no",
+  "license_class",
+  "license_expiry",
+  "badge_no",
+  "employee_type",
+  "assigned_vehicle",
+  "shift",
+  "active",
+  "emergency_contact"
+ ],
+ "fields": [
+  {
+   "fieldname": "driver_code",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Driver ID",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "driver_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "mobile",
+   "fieldtype": "Data",
+   "label": "Mobile Number",
+   "reqd": 1
+  },
+  {
+   "fieldname": "alternate_contact",
+   "fieldtype": "Data",
+   "label": "Alternate Contact"
+  },
+  {
+   "fieldname": "license_no",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "License Number",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "license_class",
+   "fieldtype": "Data",
+   "label": "License Class"
+  },
+  {
+   "fieldname": "license_expiry",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "License Expiry Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "badge_no",
+   "fieldtype": "Data",
+   "label": "Badge Number"
+  },
+  {
+   "default": "Employee",
+   "fieldname": "employee_type",
+   "fieldtype": "Select",
+   "label": "Employee Type",
+   "options": "Employee\nContract\nVendor",
+   "reqd": 1
+  },
+  {
+   "fieldname": "assigned_vehicle",
+   "fieldtype": "Link",
+   "label": "Assigned Vehicle",
+   "options": "Vehicle"
+  },
+  {
+   "fieldname": "shift",
+   "fieldtype": "Data",
+   "label": "Shift"
+  },
+  {
+   "default": "1",
+   "fieldname": "active",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Active"
+  },
+  {
+   "fieldname": "emergency_contact",
+   "fieldtype": "Data",
+   "label": "Emergency Contact"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-08-14 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Fleet",
+ "name": "Fleet Driver",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Fleet Administrator",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Transport Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Ambulance Coordinator"
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Maintenance Team"
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Finance User"
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Management Viewer"
+  },
+  {
+   "description": "Row visibility narrowed to the driver's own record by fleet_driver_query_conditions/has_permission (permissions.py) — this DocPerm only grants the capability, scoping happens in the hooks.",
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Fleet Driver"
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "ASC",
+ "states": [],
+ "track_changes": 1
+}

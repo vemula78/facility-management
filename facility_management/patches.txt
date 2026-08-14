@@ -1,6 +1,7 @@
 [pre_model_sync]
 # Patches added in this section will be executed before doctypes are migrated
 facility_management.patches.v0_3.create_em_module_def
+facility_management.patches.v0_4.create_fleet_module_def
 
 [post_model_sync]
 # Patches added in this section will be executed after doctypes are migrated
@@ -15,3 +16,5 @@ facility_management.patches.v0_3.create_em_vendor_role
 facility_management.patches.v0_3.grant_em_ticket_permissions
 facility_management.patches.v0_3.create_em_requisition_roles
 facility_management.patches.v0_3.grant_em_requisition_permissions
+facility_management.patches.v0_4.create_fleet_roles
+facility_management.patches.v0_4.add_fleet_custom_fields

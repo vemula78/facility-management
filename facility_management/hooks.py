@@ -27,6 +27,10 @@ permission_query_conditions = {
 	"PM Record": "facility_management.equipment_maintenance.permissions.pm_record_query_conditions",
 	"Breakdown Repair Ticket": "facility_management.equipment_maintenance.permissions.ticket_query_conditions",
 	"Capital Purchase Requisition": "facility_management.equipment_maintenance.permissions.requisition_query_conditions",
+	# Vehicle deliberately has NO entry — see fleet/permissions.py's module
+	# docstring: the PHP prototype gives every Fleet role unrestricted row
+	# visibility on vehicles, so Vehicle's scoping is DocPerm permlevels only.
+	"Fleet Driver": "facility_management.fleet.permissions.fleet_driver_query_conditions",
 }
 
 has_permission = {
@@ -36,6 +40,7 @@ has_permission = {
 	"PM Record": "facility_management.equipment_maintenance.permissions.pm_record_has_permission",
 	"Breakdown Repair Ticket": "facility_management.equipment_maintenance.permissions.ticket_has_permission",
 	"Capital Purchase Requisition": "facility_management.equipment_maintenance.permissions.requisition_has_permission",
+	"Fleet Driver": "facility_management.fleet.permissions.fleet_driver_has_permission",
 }
 
 # Fixtures
@@ -47,7 +52,11 @@ fixtures = [
 	{
 		"dt": "Custom Field",
 		"filters": [
-			["name", "in", ["Asset-hem_asset_class", "User-hem_department", "Asset-hem_amc_cmc_expiry"]]
+			["name", "in", [
+				"Asset-hem_asset_class", "User-hem_department", "Asset-hem_amc_cmc_expiry",
+				"User-fleet_driver", "Supplier-fleet_vendor_type",
+				"Supplier-fleet_credit_facility", "Supplier-fleet_monthly_billing",
+			]]
 		],
 	},
 ]

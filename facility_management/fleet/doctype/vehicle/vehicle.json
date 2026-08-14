@@ -1,0 +1,377 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "autoname": "field:asset_code",
+ "creation": "2026-08-14 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "asset_code",
+  "reg_no",
+  "vehicle_type",
+  "amb_category",
+  "status",
+  "column_break_status",
+  "odometer",
+  "make",
+  "model",
+  "year",
+  "chassis_no",
+  "engine_no",
+  "fuel_type",
+  "tank_capacity",
+  "mileage_benchmark",
+  "column_break_1",
+  "ownership_type",
+  "department",
+  "base_location",
+  "purchase_date",
+  "purchase_cost",
+  "vendor",
+  "seating_capacity",
+  "load_capacity",
+  "section_break_optional",
+  "call_sign",
+  "emergency_phone",
+  "gps_device_id",
+  "fastag_id",
+  "fuel_card_no",
+  "insurance_provider",
+  "emission_standard",
+  "monthly_utilization_benchmark",
+  "depreciation_method",
+  "notes"
+ ],
+ "fields": [
+  {
+   "description": "Machine key / asset tag, e.g. FL-AMB-01. Used as the document name.",
+   "fieldname": "asset_code",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Asset Code",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "reg_no",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Registration Number",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "vehicle_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Vehicle Type",
+   "options": "Ambulance\nPatient Transport\nStaff Transport\nUtility\nGoods\nOther",
+   "reqd": 1
+  },
+  {
+   "depends_on": "eval:doc.vehicle_type==\"Ambulance\"",
+   "fieldname": "amb_category",
+   "fieldtype": "Select",
+   "label": "Ambulance Category",
+   "options": "\nBLS\nALS\nNeonatal\nCardiac\nMortuary\nOther"
+  },
+  {
+   "default": "Available",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Available\nOn Trip\nUnder Maintenance\nOff Road\nStandby\nRetired",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_status",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "Values must only move forward — enforced in validate(), never decremented by a plain edit.",
+   "fieldname": "odometer",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Odometer (km)",
+   "reqd": 1
+  },
+  {
+   "fieldname": "make",
+   "fieldtype": "Data",
+   "label": "Make"
+  },
+  {
+   "fieldname": "model",
+   "fieldtype": "Data",
+   "label": "Model"
+  },
+  {
+   "fieldname": "year",
+   "fieldtype": "Int",
+   "label": "Year of Manufacture"
+  },
+  {
+   "fieldname": "chassis_no",
+   "fieldtype": "Data",
+   "label": "Chassis Number",
+   "permlevel": 1
+  },
+  {
+   "fieldname": "engine_no",
+   "fieldtype": "Data",
+   "label": "Engine Number",
+   "permlevel": 1
+  },
+  {
+   "fieldname": "fuel_type",
+   "fieldtype": "Select",
+   "label": "Fuel Type",
+   "options": "Petrol\nDiesel\nCNG\nElectric\nHybrid\nOther"
+  },
+  {
+   "fieldname": "tank_capacity",
+   "fieldtype": "Float",
+   "label": "Tank Capacity (L)"
+  },
+  {
+   "fieldname": "mileage_benchmark",
+   "fieldtype": "Float",
+   "label": "Expected Mileage Benchmark (km/L)",
+   "permlevel": 1
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "ownership_type",
+   "fieldtype": "Select",
+   "label": "Ownership Type",
+   "options": "Owned\nLeased\nRented\nDonated\nOutsourced",
+   "permlevel": 1
+  },
+  {
+   "fieldname": "department",
+   "fieldtype": "Link",
+   "label": "Department / Cost Center",
+   "options": "Department"
+  },
+  {
+   "fieldname": "base_location",
+   "fieldtype": "Data",
+   "label": "Base Location"
+  },
+  {
+   "fieldname": "purchase_date",
+   "fieldtype": "Date",
+   "label": "Purchase Date",
+   "permlevel": 1
+  },
+  {
+   "fieldname": "purchase_cost",
+   "fieldtype": "Currency",
+   "label": "Purchase Cost",
+   "permlevel": 1
+  },
+  {
+   "description": "The dealer/vendor this vehicle was purchased from. Reuses Supplier — the same doctype AMC/CMC Warranty Contract and Fleet's own vendor master (workshops, fuel stations) use — rather than a bespoke Vendor doctype.",
+   "fieldname": "vendor",
+   "fieldtype": "Link",
+   "label": "Vendor / Dealer",
+   "options": "Supplier",
+   "permlevel": 1
+  },
+  {
+   "fieldname": "seating_capacity",
+   "fieldtype": "Int",
+   "label": "Seating Capacity"
+  },
+  {
+   "fieldname": "load_capacity",
+   "fieldtype": "Float",
+   "label": "Load Capacity (kg)"
+  },
+  {
+   "fieldname": "section_break_optional",
+   "fieldtype": "Section Break",
+   "label": "Optional Details"
+  },
+  {
+   "depends_on": "eval:doc.vehicle_type==\"Ambulance\"",
+   "fieldname": "call_sign",
+   "fieldtype": "Data",
+   "label": "Ambulance Call Sign"
+  },
+  {
+   "fieldname": "emergency_phone",
+   "fieldtype": "Data",
+   "label": "Emergency Contact Number (on vehicle)"
+  },
+  {
+   "fieldname": "gps_device_id",
+   "fieldtype": "Data",
+   "label": "GPS Device ID",
+   "permlevel": 1
+  },
+  {
+   "fieldname": "fastag_id",
+   "fieldtype": "Data",
+   "label": "FASTag ID",
+   "permlevel": 1
+  },
+  {
+   "fieldname": "fuel_card_no",
+   "fieldtype": "Data",
+   "label": "Fuel Card Number",
+   "permlevel": 1
+  },
+  {
+   "fieldname": "insurance_provider",
+   "fieldtype": "Data",
+   "label": "Insurance Provider",
+   "permlevel": 1
+  },
+  {
+   "fieldname": "emission_standard",
+   "fieldtype": "Data",
+   "label": "Pollution Category / Emission Standard",
+   "permlevel": 1
+  },
+  {
+   "fieldname": "monthly_utilization_benchmark",
+   "fieldtype": "Float",
+   "label": "Expected Monthly Utilization (km)",
+   "permlevel": 1
+  },
+  {
+   "fieldname": "depreciation_method",
+   "fieldtype": "Data",
+   "label": "Depreciation Method",
+   "permlevel": 1
+  },
+  {
+   "fieldname": "notes",
+   "fieldtype": "Small Text",
+   "label": "Notes",
+   "permlevel": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-08-14 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Fleet",
+ "name": "Vehicle",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Fleet Administrator",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "permlevel": 1,
+   "read": 1,
+   "role": "Fleet Administrator",
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Transport Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "permlevel": 1,
+   "read": 1,
+   "role": "Transport Manager",
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Ambulance Coordinator"
+  },
+  {
+   "permlevel": 1,
+   "read": 1,
+   "role": "Ambulance Coordinator"
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Maintenance Team"
+  },
+  {
+   "permlevel": 1,
+   "read": 1,
+   "role": "Maintenance Team"
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Finance User"
+  },
+  {
+   "permlevel": 1,
+   "read": 1,
+   "role": "Finance User"
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Management Viewer"
+  },
+  {
+   "permlevel": 1,
+   "read": 1,
+   "role": "Management Viewer"
+  },
+  {
+   "description": "Sees every vehicle (unrestricted row visibility, matching the PHP prototype) but only the base-permlevel fields — the same allowlist fleet_sanitize_visible() enforced for the Vendor role: id/asset code/reg no/type/status/odometer.",
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Vendor"
+  },
+  {
+   "description": "Sees every vehicle but only the base-permlevel fields — the wider allowlist fleet_sanitize_visible() enforced for the Driver role (adds fuel_type/tank_capacity/base_location/call_sign to the Vendor allowlist). Frappe permlevel is coarser than the PHP prototype's exact per-role field list; the base-level fields below were chosen as the common subset both roles may see.",
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Fleet Driver"
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "ASC",
+ "states": [],
+ "track_changes": 1
+}

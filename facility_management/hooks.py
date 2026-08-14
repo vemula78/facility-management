@@ -28,6 +28,26 @@ has_permission = {
 	"Asset": "facility_management.equipment_maintenance.permissions.asset_has_permission",
 }
 
+# Fixtures
+# --------
+# The custom fields added by add_em_custom_fields.py must also be declared here
+# so `bench export-fixtures` / standard fixture sync doesn't miss them on a site
+# that doesn't run this app's own patches.
+fixtures = [
+	{
+		"dt": "Custom Field",
+		"filters": [["name", "in", ["Asset-hem_asset_class", "User-hem_department"]]],
+	},
+]
+
+# Seed data lifecycle
+# --------------------
+# Trade / Asset Class master data is idempotent (upsert-by-name), so it's safe
+# to also run on after_install (fresh site) and after_migrate (site that
+# bypassed or reset the one-off patch in patches.txt).
+after_install = "facility_management.patches.v0_3.seed_em_trades_and_asset_classes.execute"
+after_migrate = "facility_management.patches.v0_3.seed_em_trades_and_asset_classes.execute"
+
 # Document Events
 # ---------------
 doc_events = {

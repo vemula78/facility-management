@@ -49,13 +49,30 @@ def get_user_trade(user=None):
 	A user holding none of the four engineering roles returns None — that is the
 	mirror-image of an unmapped department account: no trade role at all means
 	no trade restriction, not zero access.
+
+	A user holding more than one engineering role (a data-entry mistake, since
+	the roles are meant to be mutually exclusive) is not silently narrowed to
+	whichever trade happens to iterate first — that would make assets of the
+	other trade invisible to them with no error anywhere. get_user_trades()
+	below is the multi-trade-aware form; this stays single-value for callers
+	that only make sense for exactly one trade.
+	"""
+	trades = get_user_trades(user)
+	if len(trades) == 1:
+		return trades[0]
+	return None
+
+
+def get_user_trades(user=None):
+	"""Every engineering trade this user's roles scope them to (usually 0 or 1).
+
+	Unlike get_user_trade(), this doesn't collapse multiple roles down to one
+	trade — a user assigned both Civil Engineer and Electrical Engineer sees
+	assets of both trades, not just whichever role's trade iterates first.
 	"""
 	user = _user(user)
 	roles = set(frappe.get_roles(user))
-	for role, trade in ROLE_TO_TRADE.items():
-		if role in roles:
-			return trade
-	return None
+	return [trade for role, trade in ROLE_TO_TRADE.items() if role in roles]
 
 
 def get_user_department(user=None):
@@ -71,7 +88,7 @@ def get_user_department(user=None):
 
 
 def is_trade_scoped_user(user=None):
-	"""True when this user's visibility must be narrowed to one trade.
+	"""True when this user's visibility must be narrowed to their trade(s).
 
 	False for Administrator / System Manager even when they also hold an
 	engineering role, and False for anyone holding no engineering role at all.
@@ -79,7 +96,7 @@ def is_trade_scoped_user(user=None):
 	user = _user(user)
 	if user == "Administrator":
 		return False
-	if get_user_trade(user) is None:
+	if not get_user_trades(user):
 		return False
 	roles = set(frappe.get_roles(user))
 	if roles.intersection(OVERRIDE_ROLES):
@@ -99,6 +116,20 @@ def asset_classes_for_trade(trade):
 		pluck="name",
 		ignore_permissions=True,
 	)
+
+
+def asset_classes_for_user(user=None):
+	"""Union of asset classes across every trade this user's roles grant —
+	the caller permission.py should use instead of asset_classes_for_trade()
+	plus get_user_trade(), so a user holding more than one engineering role is
+	scoped to the union of their trades' classes rather than losing access to
+	all but one trade."""
+	classes = []
+	for trade in get_user_trades(user):
+		for cls in asset_classes_for_trade(trade):
+			if cls not in classes:
+				classes.append(cls)
+	return classes
 
 
 def default_trade_for_class(asset_class):

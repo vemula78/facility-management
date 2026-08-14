@@ -23,17 +23,21 @@ Contract / Requisition doctypes are expected to copy.
 import frappe
 
 from facility_management.equipment_maintenance.utils import (
-	asset_classes_for_trade,
-	get_user_trade,
+	asset_classes_for_user,
 	is_trade_scoped_user,
 )
 
 
 def _allowed_classes(user):
-	"""(is_scoped, classes). `is_scoped` False means no restriction applies."""
+	"""(is_scoped, classes). `is_scoped` False means no restriction applies.
+
+	Uses the union of classes across every trade the user's roles grant — a
+	user holding more than one engineering role must not lose visibility into
+	all but one trade (see utils.get_user_trades()).
+	"""
 	if not is_trade_scoped_user(user):
 		return False, None
-	return True, asset_classes_for_trade(get_user_trade(user))
+	return True, asset_classes_for_user(user)
 
 
 def asset_query_conditions(user=None):
@@ -70,5 +74,13 @@ def asset_has_permission(doc, ptype=None, user=None):
 		return True
 	if not classes:
 		return False
+	# Frappe calls this hook for the doctype-level check too (e.g. opening the
+	# Asset list in Desk, frappe.client.has_perm), passing doc="Asset" — a bare
+	# string with no `hem_asset_class` to read. That check must pass so the list
+	# view loads; the actual row-level restriction still happens via
+	# asset_query_conditions for lists and via this same hook (with a real
+	# document instance) for a single-record load.
+	if isinstance(doc, str):
+		return True
 	asset_class = doc.get("hem_asset_class") if hasattr(doc, "get") else None
 	return bool(asset_class) and asset_class in classes

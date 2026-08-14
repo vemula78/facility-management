@@ -10,3 +10,4 @@ facility_management.patches.v0_3.add_em_custom_fields
 facility_management.patches.v0_3.seed_em_trades_and_asset_classes
 facility_management.patches.v0_3.grant_em_asset_permissions
 facility_management.patches.v0_3.grant_em_contract_permissions
+facility_management.patches.v0_3.grant_em_pm_permissions

@@ -1,0 +1,117 @@
+{
+	"actions": [],
+	"allow_rename": 0,
+	"autoname": "format:PM-REC-{reference_name}-{#####}",
+	"creation": "2026-08-14 00:00:00.000000",
+	"doctype": "DocType",
+	"editable_grid": 1,
+	"engine": "InnoDB",
+	"field_order": [
+		"pm_schedule",
+		"reference_doctype",
+		"reference_name",
+		"completion_date",
+		"performed_by",
+		"has_certificate",
+		"notes",
+		"schedule_due_date_before_roll",
+		"schedule_status_before_roll"
+	],
+	"fields": [
+		{
+			"fieldname": "pm_schedule",
+			"fieldtype": "Link",
+			"in_list_view": 1,
+			"in_standard_filter": 1,
+			"label": "PM Schedule",
+			"options": "PM Schedule",
+			"reqd": 1
+		},
+		{
+			"description": "Denormalized from pm_schedule at save time (validate()), not entered directly — kept on this doctype so permission checks don't need to join through PM Schedule, matching how AMC CMC Warranty Contract keeps its own asset link rather than deriving it through another doctype.",
+			"fieldname": "reference_doctype",
+			"fieldtype": "Link",
+			"in_standard_filter": 1,
+			"label": "Reference Type",
+			"options": "DocType",
+			"read_only": 1
+		},
+		{
+			"fieldname": "reference_name",
+			"fieldtype": "Dynamic Link",
+			"in_list_view": 1,
+			"label": "Reference",
+			"options": "reference_doctype",
+			"read_only": 1
+		},
+		{
+			"fieldname": "completion_date",
+			"fieldtype": "Date",
+			"in_list_view": 1,
+			"label": "Completion Date",
+			"reqd": 1
+		},
+		{
+			"fieldname": "performed_by",
+			"fieldtype": "Link",
+			"in_list_view": 1,
+			"label": "Performed By",
+			"options": "User"
+		},
+		{
+			"default": "0",
+			"fieldname": "has_certificate",
+			"fieldtype": "Check",
+			"label": "Has Certificate"
+		},
+		{
+			"fieldname": "notes",
+			"fieldtype": "Small Text",
+			"label": "Notes"
+		},
+		{
+			"description": "The linked PM Schedule's due_date immediately before this Record's on_submit roll-forward advanced it. Read by on_cancel to restore the Schedule exactly, rather than re-deriving it by subtracting a periodicity interval — a manual edit to the Schedule between submit and cancel would make that arithmetic wrong.",
+			"fieldname": "schedule_due_date_before_roll",
+			"fieldtype": "Date",
+			"hidden": 1,
+			"label": "Schedule Due Date Before Roll-Forward",
+			"read_only": 1
+		},
+		{
+			"fieldname": "schedule_status_before_roll",
+			"fieldtype": "Data",
+			"hidden": 1,
+			"label": "Schedule Status Before Roll-Forward",
+			"read_only": 1
+		}
+	],
+	"index_web_pages_for_search": 1,
+	"is_submittable": 1,
+	"links": [],
+	"modified": "2026-08-14 00:00:00.000000",
+	"modified_by": "Administrator",
+	"module": "Equipment Maintenance",
+	"name": "PM Record",
+	"naming_rule": "Expression",
+	"owner": "Administrator",
+	"permissions": [
+		{
+			"cancel": 1,
+			"create": 1,
+			"delete": 0,
+			"email": 1,
+			"export": 1,
+			"print": 1,
+			"read": 1,
+			"report": 1,
+			"role": "System Manager",
+			"share": 1,
+			"submit": 1,
+			"write": 1
+		}
+	],
+	"sort_field": "creation",
+	"sort_order": "DESC",
+	"states": [],
+	"track_changes": 1
+}

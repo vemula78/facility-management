@@ -23,11 +23,15 @@ website_route_rules = [
 permission_query_conditions = {
 	"Asset": "facility_management.equipment_maintenance.permissions.asset_query_conditions",
 	"AMC CMC Warranty Contract": "facility_management.equipment_maintenance.permissions.contract_query_conditions",
+	"PM Schedule": "facility_management.equipment_maintenance.permissions.pm_schedule_query_conditions",
+	"PM Record": "facility_management.equipment_maintenance.permissions.pm_record_query_conditions",
 }
 
 has_permission = {
 	"Asset": "facility_management.equipment_maintenance.permissions.asset_has_permission",
 	"AMC CMC Warranty Contract": "facility_management.equipment_maintenance.permissions.contract_has_permission",
+	"PM Schedule": "facility_management.equipment_maintenance.permissions.pm_schedule_has_permission",
+	"PM Record": "facility_management.equipment_maintenance.permissions.pm_record_has_permission",
 }
 
 # Fixtures

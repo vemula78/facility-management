@@ -17,7 +17,8 @@ Registering only the first would leave every asset readable by name to any
 engineering role, which is what this module exists to prevent.
 
 This file is the reference pattern the PM Schedule / PM Record / Ticket /
-Contract / Requisition doctypes are expected to copy.
+Contract / Requisition doctypes are expected to copy. PM Schedule and PM
+Record now do (below).
 """
 
 import frappe
@@ -131,4 +132,100 @@ def contract_has_permission(doc, ptype=None, user=None):
 	if not asset:
 		return False
 	asset_class = frappe.db.get_value("Asset", asset, "hem_asset_class")
+	return bool(asset_class) and asset_class in classes
+
+
+def _asset_class_for_reference(reference_doctype, reference_name):
+	"""The hem_asset_class of a PM Schedule/Record's reference, or None.
+
+	Only "Asset" is a supported reference_doctype in this build (see
+	pm_schedule.ALLOWED_REFERENCE_DOCTYPES) — anything else, including a value
+	a future Fleet slice might add before its own scoping logic lands here,
+	must fail closed rather than default to unrestricted access.
+	"""
+	if reference_doctype != "Asset" or not reference_name:
+		return None
+	return frappe.db.get_value("Asset", reference_name, "hem_asset_class")
+
+
+def pm_schedule_query_conditions(user=None):
+	"""SQL fragment ANDed onto every PM Schedule list query.
+
+	PM Schedule has no asset_class field of its own — trade-scoping is derived
+	from the reference Asset's hem_asset_class, restricted to reference_doctype
+	= 'Asset' explicitly so a future non-Asset reference_doctype value is
+	excluded by this condition rather than silently unscoped.
+	"""
+	user = user or frappe.session.user
+	scoped, classes = _allowed_classes(user)
+	if not scoped:
+		return ""
+	if not classes:
+		return "1=0"
+	escaped = ", ".join(frappe.db.escape(c) for c in classes)
+	return (
+		"(`tabPM Schedule`.`reference_doctype` = 'Asset' and `tabPM Schedule`.`reference_name` in "
+		"(select `tabAsset`.`name` from `tabAsset` "
+		"where `tabAsset`.`hem_asset_class` in ({0})))"
+	).format(escaped)
+
+
+def pm_schedule_has_permission(doc, ptype=None, user=None):
+	"""Gate a direct single-PM Schedule load/write for a trade-scoped user."""
+	user = user or frappe.session.user
+	scoped, classes = _allowed_classes(user)
+	if not scoped:
+		return True
+	if not classes:
+		return False
+	# Frappe calls this hook for the doctype-level check too (e.g. opening the
+	# PM Schedule list in Desk), passing doc="PM Schedule" — a bare string with
+	# no reference to resolve. That check must pass so the list view loads; the
+	# actual row-level restriction happens via pm_schedule_query_conditions for
+	# lists and via this same hook (with a real document instance) for a
+	# single-record load.
+	if isinstance(doc, str):
+		return True
+	reference_doctype = doc.get("reference_doctype") if hasattr(doc, "get") else None
+	reference_name = doc.get("reference_name") if hasattr(doc, "get") else None
+	asset_class = _asset_class_for_reference(reference_doctype, reference_name)
+	return bool(asset_class) and asset_class in classes
+
+
+def pm_record_query_conditions(user=None):
+	"""SQL fragment ANDed onto every PM Record list query.
+
+	PM Record denormalizes reference_doctype/reference_name onto itself (see
+	pm_record.py's validate()), so the same restriction pattern as PM Schedule
+	applies directly against tabPM Record rather than via a join to PM Schedule.
+	"""
+	user = user or frappe.session.user
+	scoped, classes = _allowed_classes(user)
+	if not scoped:
+		return ""
+	if not classes:
+		return "1=0"
+	escaped = ", ".join(frappe.db.escape(c) for c in classes)
+	return (
+		"(`tabPM Record`.`reference_doctype` = 'Asset' and `tabPM Record`.`reference_name` in "
+		"(select `tabAsset`.`name` from `tabAsset` "
+		"where `tabAsset`.`hem_asset_class` in ({0})))"
+	).format(escaped)
+
+
+def pm_record_has_permission(doc, ptype=None, user=None):
+	"""Gate a direct single-PM Record load/write for a trade-scoped user."""
+	user = user or frappe.session.user
+	scoped, classes = _allowed_classes(user)
+	if not scoped:
+		return True
+	if not classes:
+		return False
+	# Same doctype-level string call as every other has_permission hook in
+	# this file — must pass before touching doc.get(...).
+	if isinstance(doc, str):
+		return True
+	reference_doctype = doc.get("reference_doctype") if hasattr(doc, "get") else None
+	reference_name = doc.get("reference_name") if hasattr(doc, "get") else None
+	asset_class = _asset_class_for_reference(reference_doctype, reference_name)
 	return bool(asset_class) and asset_class in classes

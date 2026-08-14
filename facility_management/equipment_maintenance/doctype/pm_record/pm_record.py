@@ -79,18 +79,28 @@ class PMRecord(Document):
 	def _forbid_out_of_order_cancel(self):
 		# A later Record's roll-forward is only safe to undo by THIS Record's
 		# snapshot if no other submitted Record for the same Schedule was
-		# created after this one — otherwise this Record's snapshot predates
-		# that later roll and would erase it. "Created after" (creation
-		# timestamp), not completion_date, is what matters: it is submission
-		# order, not maintenance-date order, that determines which snapshot is
-		# still valid.
+		# SUBMITTED after this one — otherwise this Record's snapshot predates
+		# that later roll and would erase it. Submission order, not maintenance
+		# (completion_date) order, is what matters here.
+		#
+		# Uses `modified`, not `creation`, as the submission-order proxy —
+		# found by Antigravity Pass 2 audit. `creation` is the draft row's
+		# creation time, which can precede submission by an arbitrary amount
+		# (a Record drafted Monday and submitted Wednesday, while a second
+		# Record is drafted Tuesday and submitted first) and so does not track
+		# submission order at all. Frappe's own submit() flow
+		# (Document._submit -> save() -> set_user_and_timestamp()) sets
+		# `modified` to the actual submission wall-clock time; this doctype has
+		# no allow_on_submit fields and _roll_schedule_forward's own db_set
+		# calls pass update_modified=False, so nothing rebumps `modified` after
+		# submission — it stays a stable, accurate submission-order key here.
 		newer = frappe.db.exists(
 			"PM Record",
 			{
 				"pm_schedule": self.pm_schedule,
 				"docstatus": 1,
 				"name": ["!=", self.name],
-				"creation": [">", self.creation],
+				"modified": [">", self.modified],
 			},
 		)
 		if newer:

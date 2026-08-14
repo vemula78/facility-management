@@ -22,10 +22,12 @@ website_route_rules = [
 # This Asset pair is the reference pattern for PM/Ticket/Contract/Requisition.
 permission_query_conditions = {
 	"Asset": "facility_management.equipment_maintenance.permissions.asset_query_conditions",
+	"AMC CMC Warranty Contract": "facility_management.equipment_maintenance.permissions.contract_query_conditions",
 }
 
 has_permission = {
 	"Asset": "facility_management.equipment_maintenance.permissions.asset_has_permission",
+	"AMC CMC Warranty Contract": "facility_management.equipment_maintenance.permissions.contract_has_permission",
 }
 
 # Fixtures
@@ -36,7 +38,9 @@ has_permission = {
 fixtures = [
 	{
 		"dt": "Custom Field",
-		"filters": [["name", "in", ["Asset-hem_asset_class", "User-hem_department"]]],
+		"filters": [
+			["name", "in", ["Asset-hem_asset_class", "User-hem_department", "Asset-hem_amc_cmc_expiry"]]
+		],
 	},
 ]
 
@@ -75,5 +79,12 @@ doc_events = {
 	},
 	"Asset Class": {
 		"on_trash": "facility_management.equipment_maintenance.doctype.asset_class.asset_class.prevent_delete",
+	},
+	"AMC CMC Warranty Contract": {
+		# Keeps Asset.hem_amc_cmc_expiry equal to the MAX end_date across the
+		# asset's non-cancelled contracts through create, update, cancel and delete.
+		"on_update": "facility_management.equipment_maintenance.doctype.amc_cmc_warranty_contract.amc_cmc_warranty_contract.update_asset_expiry",
+		"on_cancel": "facility_management.equipment_maintenance.doctype.amc_cmc_warranty_contract.amc_cmc_warranty_contract.cancel_asset_expiry",
+		"on_trash": "facility_management.equipment_maintenance.doctype.amc_cmc_warranty_contract.amc_cmc_warranty_contract.delete_asset_expiry",
 	},
 }

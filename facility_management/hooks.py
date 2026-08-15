@@ -104,4 +104,12 @@ doc_events = {
 		"on_cancel": "facility_management.equipment_maintenance.doctype.amc_cmc_warranty_contract.amc_cmc_warranty_contract.cancel_asset_expiry",
 		"on_trash": "facility_management.equipment_maintenance.doctype.amc_cmc_warranty_contract.amc_cmc_warranty_contract.delete_asset_expiry",
 	},
+	"User": {
+		# hem_department/fleet_driver are permission-scoping identity fields.
+		# Frappe grants every user blanket write on their OWN User document
+		# regardless of DocPerm/permlevel, so this can't be closed with a
+		# field property -- see user_identity_guard.py's module docstring for
+		# the live-reproduced self-edit this closes.
+		"validate": "facility_management.facility_management.user_identity_guard.lock_identity_fields",
+	},
 }

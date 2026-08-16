@@ -70,9 +70,11 @@ STEP_KEYS = [step["key"] for step in REQUISITION_WORKFLOW]
 #: status/current_step/history are separately protected — see
 #: _enforce_transition_only_fields — because they must change ONLY through
 #: transition(), including while still in Draft (a caller must not be able
-#: to hand-set status="Completed" via a plain save at any point).
+#: to hand-set status="Completed" via a plain save at any point). raised_by
+#: is locked even more tightly still — see _enforce_raised_by_immutable —
+#: it never changes after insert, not even during Draft, since it anchors
+#: the approval-step raiser-exclusion check.
 CONTENT_FIELDS = (
-	"raised_by",
 	"department",
 	"title",
 	"justification",
@@ -162,13 +164,18 @@ class CapitalPurchaseRequisition(Document):
 		# pattern as every other status-tracking doctype in this app.
 		self.status = "Draft"
 		self.current_step = "draft"
-		if not self.raised_by:
-			self.raised_by = frappe.session.user
+		# raised_by is always the creating user, never a caller-supplied
+		# value — it's the anchor the raiser-exclusion check depends on, and
+		# a writable raised_by would let anyone (Administrators included)
+		# originate a requisition credited to someone else and then act on
+		# it themselves at an approval step.
+		self.raised_by = frappe.session.user
 
 	def validate(self):
 		if self.is_new():
 			self._compute_is_capital_requisition()
 		else:
+			self._enforce_raised_by_immutable()
 			self._enforce_content_lock()
 			self._enforce_transition_only_fields()
 
@@ -177,6 +184,20 @@ class CapitalPurchaseRequisition(Document):
 			"Equipment Maintenance Settings", "capital_purchase_threshold"
 		)
 		self.is_capital_requisition = bool(threshold and self.estimated_value and self.estimated_value >= threshold)
+
+	def _enforce_raised_by_immutable(self):
+		# raised_by is set once, at creation, from the session user and never
+		# changes again — not even while still in Draft. It's the anchor the
+		# raiser-exclusion check at approval steps relies on; a raised_by
+		# that could be edited after insert would let anyone re-point an
+		# existing requisition away from themselves and then act on it at an
+		# approval step.
+		before = self.get_doc_before_save()
+		if before and self.raised_by != before.raised_by:
+			frappe.throw(
+				_("raised_by cannot be changed once a requisition is created."),
+				title=_("Capital Purchase Requisition"),
+			)
 
 	def _enforce_content_lock(self):
 		before = self.get_doc_before_save()
@@ -193,6 +214,9 @@ class CapitalPurchaseRequisition(Document):
 		# status/current_step/history may change ONLY via transition() (which
 		# sets self.flags.via_transition before calling save()) — never via a
 		# plain .save() call, even from Draft, and even by an Administrator.
+		# history's JSON read_only:1 is a UI property only; without this
+		# check a caller with plain write access could forge or erase
+		# approval-trail entries through an ordinary document save.
 		if self.flags.get("via_transition"):
 			return
 		before = self.get_doc_before_save()
@@ -203,6 +227,18 @@ class CapitalPurchaseRequisition(Document):
 				_("status and current_step can only change through the transition() action, not a direct save."),
 				title=_("Capital Purchase Requisition"),
 			)
+		if self._history_as_rows(self) != self._history_as_rows(before):
+			frappe.throw(
+				_("history can only change through the transition() action, not a direct save."),
+				title=_("Capital Purchase Requisition"),
+			)
+
+	@staticmethod
+	def _history_as_rows(doc):
+		return [
+			(row.step, row.action, row.actor, str(row.timestamp), row.reason)
+			for row in (doc.history or [])
+		]
 
 	def _log(self, step, action, user, reason=None):
 		self.append(
